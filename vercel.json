@@ -1,19 +1,15 @@
 {
   "version": 2,
-  "builds": [
+  "buildCommand": "",
+  "outputDirectory": "download",
+  "rewrites": [
     {
-      "src": "download/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/download/index.html"
+      "source": "/",
+      "destination": "/index.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/download/$1"
+      "source": "/(.*)",
+      "destination": "/$1"
     }
   ],
   "headers": [
