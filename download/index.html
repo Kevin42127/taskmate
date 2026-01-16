@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TodoApp - 待辦事項管理器 - 免費下載</title>
+    <meta name="description" content="TodoApp 是一款簡潔高效的待辦事項管理應用程式，支援 Windows、macOS 和 Linux。免費下載，開箱即用。">
+    <meta name="keywords" content="待辦事項,任務管理,TodoApp,免費軟體,跨平台">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3B82F6;
+            --primary-dark: #2563EB;
+            --secondary-color: #10B981;
+            --background-color: #F9FAFB;
+            --card-background: #FFFFFF;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .card-hover {
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .download-btn {
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-icon {
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature-icon:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.2s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 12px 24px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .download-card {
+            background: var(--card-background);
+            border: 2px solid var(--primary-color);
+            border-radius: 16px;
+            padding: 40px 32px;
+            text-align: center;
+        }
+
+        .requirements-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px 32px;
+        }
+
+        .info-box {
+            background: #EFF6FF;
+            border: 1px solid #DBEAFE;
+            border-radius: 8px;
+            padding: 16px;
+            color: #1E40AF;
+        }
+
+        .footer {
+            background: var(--text-primary);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="ri-task-line text-3xl"></i>
+                    <span class="text-2xl font-bold">TodoApp</span>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#features" class="nav-link hover:text-purple-200 transition">功能特色</a>
+                    <a href="#download" class="nav-link hover:text-purple-200 transition">下載</a>
+                    <a href="#requirements" class="nav-link hover:text-purple-200 transition">系統需求</a>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Hero Section -->
+        <div class="container mx-auto px-6 py-16 text-center">
+            <div class="float-animation inline-block mb-8">
+                <i class="ri-task-line text-6xl"></i>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">TodoApp</h1>
+            <h2 class="text-2xl md:text-3xl mb-6 text-purple-200">待辦事項管理器</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto text-purple-100">
+                簡潔高效的待辦事項管理應用程式，讓您輕鬆管理日常任務，提升工作效率
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#download" class="btn-primary inline-flex items-center justify-center">
+                    <i class="ri-download-2-line mr-2"></i>
+                    立即下載
+                </a>
+                <a href="#features" class="btn-secondary inline-flex items-center justify-center">
+                    <i class="ri-eye-line mr-2"></i>
+                    了解更多
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-12">功能特色</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card-hover feature-card">
+                    <div class="feature-icon text-4xl mb-4">
+                        <i class="ri-add-circle-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">新增待辦事項</h3>
+                    <p class="text-gray-600">快速新增待辦事項，支援標籤分類，讓任務管理更有條理</p>
+                </div>
+                <div class="card-hover feature-card">
+                    <div class="feature-icon text-4xl mb-4">
+                        <i class="ri-edit-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">編輯任務</h3>
+                    <p class="text-gray-600">隨時編輯待辦事項內容和標籤，保持資訊最新</p>
+                </div>
+                <div class="card-hover feature-card">
+                    <div class="feature-icon text-4xl mb-4">
+                        <i class="ri-checkbox-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">完成狀態</h3>
+                    <p class="text-gray-600">一鍵標記完成狀態，清楚追蹤任務進度</p>
+                </div>
+                <div class="card-hover feature-card">
+                    <div class="feature-icon text-4xl mb-4">
+                        <i class="ri-search-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">智能搜尋</h3>
+                    <p class="text-gray-600">強大的搜尋功能，支援標題和標籤搜尋，快速找到目標任務</p>
+                </div>
+                <div class="card-hover feature-card">
+                    <div class="feature-icon text-4xl mb-4">
+                        <i class="ri-filter-3-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">狀態篩選</h3>
+                    <p class="text-gray-600">按完成狀態篩選待辦事項：全部、待完成、已完成</p>
+                </div>
+                <div class="card-hover feature-card">
+                    <div class="feature-icon text-4xl mb-4">
+                        <i class="ri-save-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">自動儲存</h3>
+                    <p class="text-gray-600">資料自動儲存到本地，永不遺失您的重要任務</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-12">下載 TodoApp</h2>
+            
+            <div class="max-w-2xl mx-auto">
+                <div class="download-card">
+                    <div class="text-blue-600 text-5xl mb-6">
+                        <i class="ri-windows-line"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Windows 版本</h3>
+                    <p class="text-gray-600 mb-6">適用於 Windows 10/11 系統</p>
+                    
+                    <div class="space-y-4">
+                        <a href="https://github.com/Kevin42127/todolist/releases/latest/download/TodoApp-Setup.exe" 
+                           class="btn-primary w-full inline-flex items-center justify-center"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            <i class="ri-download-2-line mr-3"></i>
+                            下載安裝版
+                        </a>
+                        <a href="https://github.com/Kevin42127/todolist/releases" 
+                           class="text-blue-600 hover:text-blue-800 text-sm underline"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            查看所有版本
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Version Info -->
+            <div class="mt-12 text-center">
+                <p class="text-gray-600 mb-2">當前版本：<span class="font-bold">1.0.0</span></p>
+                <p class="text-gray-600">發布日期：<span class="font-bold">2025-01-16</span></p>
+                <p class="text-sm text-gray-500 mt-4">檔案經過病毒掃描，請放心使用</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Requirements Section -->
+    <section id="requirements" class="py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-12">系統需求</h2>
+            
+            <div class="max-w-2xl mx-auto">
+                <div class="requirements-card">
+                    <h3 class="text-xl font-bold mb-6 text-blue-600 text-center">
+                        <i class="ri-windows-line mr-2"></i>Windows 系統需求
+                    </h3>
+                    <ul class="space-y-3 text-gray-600 text-lg">
+                        <li class="flex items-center">
+                            <i class="ri-checkbox-circle-fill text-green-500 mr-3"></i>
+                            Windows 10 (1903) 或 Windows 11
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-checkbox-circle-fill text-green-500 mr-3"></i>
+                            4GB RAM 或以上
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-checkbox-circle-fill text-green-500 mr-3"></i>
+                            500MB 可用磁碟空間
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-checkbox-circle-fill text-green-500 mr-3"></i>
+                            .NET 8.0 運行時（自包含版本已包含）
+                        </li>
+                    </ul>
+                    
+                    <div class="info-box mt-6">
+                        <p class="text-sm">
+                            <i class="ri-information-line mr-2"></i>
+                            TodoApp 安裝包為自包含版本，已內建 .NET 8.0 運行時，無需額外安裝。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-8">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <i class="ri-task-line text-2xl"></i>
+                <span class="text-xl font-bold">TodoApp</span>
+            </div>
+            <p class="text-gray-300 mb-4">讓待辦事項管理變得簡單高效</p>
+            <p class="text-sm text-gray-400">© 2025 TodoApp. 版權所有。</p>
+        </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-8 right-8 btn-primary p-3 rounded-full shadow-lg">
+        <i class="ri-arrow-up-line text-xl"></i>
+    </button>
+
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

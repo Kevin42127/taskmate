@@ -1,0 +1,30 @@
+bin/
+obj/
+*.user
+*.suo
+*.cache
+.vs/
+.vscode/
+*.dll
+*.exe
+*.pdb
+config.json
+
+# 發布檔案（使用 GitHub Releases 發布）
+publish/
+packages/
+
+# 安裝程式（使用 GitHub Releases 發布）
+installer/*.exe
+
+# 日誌檔案
+*.log
+publish/logs/
+
+# 臨時檔案
+*.tmp
+*.temp
+
+# Vercel
+.vercel
+
