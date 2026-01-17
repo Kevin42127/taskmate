@@ -10,7 +10,6 @@ namespace TaskMateApp.ViewModels
     {
         private readonly AddTaskDialog _dialog;
         private string _title = string.Empty;
-        private string _description = string.Empty;
         private Priority _priority = Priority.Medium;
         private bool _isEditMode;
         private string? _editTaskId;
@@ -19,12 +18,6 @@ namespace TaskMateApp.ViewModels
         {
             get => _title;
             set => SetProperty(ref _title, value);
-        }
-
-        public string Description
-        {
-            get => _description;
-            set => SetProperty(ref _description, value);
         }
 
         public Priority Priority
@@ -68,14 +61,12 @@ namespace TaskMateApp.ViewModels
             IsEditMode = true;
             EditTaskId = task.Id;
             Title = task.Title;
-            Description = task.Description;
             Priority = task.Priority;
         }
 
         private void Confirm()
         {
             _dialog.TitleResult = Title.Trim();
-            _dialog.DescriptionResult = Description.Trim();
             _dialog.PriorityResult = Priority;
             _dialog.EditTaskId = EditTaskId;
             _dialog.Close(true);

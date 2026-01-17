@@ -93,7 +93,7 @@ namespace TaskMateApp.ViewModels
             ((RelayCommand)DeleteAllCommand).RaiseCanExecuteChanged();
         }
 
-        public void AddTask(string title, string description, Priority priority = Priority.Medium)
+        public void AddTask(string title, Priority priority = Priority.Medium)
         {
             if (string.IsNullOrWhiteSpace(title))
                 return;
@@ -101,7 +101,6 @@ namespace TaskMateApp.ViewModels
             var newTask = new TodoItem
             {
                 Title = title.Trim(),
-                Description = description.Trim(),
                 Priority = priority,
                 BorderColor = GetRandomBorderColor()
             };
@@ -113,13 +112,12 @@ namespace TaskMateApp.ViewModels
             _ = SaveTasksAsync();
         }
 
-        public void EditTask(string taskId, string title, string description, Priority priority)
+        public void EditTask(string taskId, string title, Priority priority)
         {
             var task = Tasks.FirstOrDefault(t => t.Id == taskId);
             if (task == null) return;
 
             task.Title = title.Trim();
-            task.Description = description.Trim();
             task.Priority = priority;
 
             ((RelayCommand)CompleteAllCommand).RaiseCanExecuteChanged();
@@ -205,7 +203,6 @@ namespace TaskMateApp.ViewModels
         private void Task_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(TodoItem.Title) || 
-                e.PropertyName == nameof(TodoItem.Description) ||
                 e.PropertyName == nameof(TodoItem.IsCompleted) ||
                 e.PropertyName == nameof(TodoItem.Priority))
             {
@@ -223,8 +220,7 @@ namespace TaskMateApp.ViewModels
             {
                 var searchLower = SearchText.ToLowerInvariant();
                 filtered = filtered.Where(t => 
-                    t.Title.ToLowerInvariant().Contains(searchLower) ||
-                    t.Description.ToLowerInvariant().Contains(searchLower));
+                    t.Title.ToLowerInvariant().Contains(searchLower));
             }
 
             if (FilterStatus != "全部")

@@ -257,7 +257,7 @@
                                     </Setter>
                                 </Style>
                             </Border.Styles>
-                            <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+                            <Grid RowDefinitions="Auto,Auto,*,Auto">
                                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0"
                                                Text="{Binding Title}"
@@ -280,26 +280,17 @@
                                     </Border>
                                 </Grid>
                                 <TextBlock Grid.Row="1"
-                                           Text="{Binding Description}"
-                                           FontSize="12"
-                                           Foreground="{DynamicResource TextSecondaryColor}"
-                                           TextWrapping="Wrap"
-                                           Opacity="{Binding Description, Converter={StaticResource StringToOpacityConverter}}"
-                                           Margin="0,0,0,8"
-                                           MaxHeight="60"
-                                           TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Grid.Row="2"
                                            Text="{Binding CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"
                                            FontSize="11"
                                            Foreground="{DynamicResource TextSecondaryColor}"
                                            Margin="0,0,0,8"/>
-                                <TextBlock Grid.Row="3"
+                                <TextBlock Grid.Row="2"
                                            Text="{Binding CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"
                                            FontSize="11"
                                            Foreground="{DynamicResource TextSecondaryColor}"
                                            VerticalAlignment="Bottom"
                                            Opacity="0"/>
-                                <StackPanel Grid.Row="4" 
+                                <StackPanel Grid.Row="3" 
                                             Orientation="Horizontal" 
                                             HorizontalAlignment="Right"
                                             Margin="0,8,0,0">

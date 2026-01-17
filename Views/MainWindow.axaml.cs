@@ -153,11 +153,11 @@ namespace TaskMateApp.Views
             {
                 if (editTask != null && !string.IsNullOrEmpty(dialog.EditTaskId))
                 {
-                    mainViewModel.EditTask(dialog.EditTaskId, dialog.TitleResult, dialog.DescriptionResult ?? string.Empty, dialog.PriorityResult);
+                    mainViewModel.EditTask(dialog.EditTaskId, dialog.TitleResult, dialog.PriorityResult);
                 }
                 else
                 {
-                    mainViewModel.AddTask(dialog.TitleResult, dialog.DescriptionResult ?? string.Empty, dialog.PriorityResult);
+                    mainViewModel.AddTask(dialog.TitleResult, dialog.PriorityResult);
                 }
             }
         }

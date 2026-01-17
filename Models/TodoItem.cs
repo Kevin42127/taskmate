@@ -15,7 +15,6 @@ namespace TaskMateApp.Models
     {
         private string _id = Guid.NewGuid().ToString();
         private string _title = string.Empty;
-        private string _description = string.Empty;
         private bool _isCompleted;
         private DateTime _createdAt = DateTime.Now;
         private DateTime? _completedAt;
@@ -34,12 +33,6 @@ namespace TaskMateApp.Models
         {
             get => _title;
             set => SetProperty(ref _title, value);
-        }
-
-        public string Description
-        {
-            get => _description;
-            set => SetProperty(ref _description, value);
         }
 
         public bool IsCompleted
