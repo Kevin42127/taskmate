@@ -99,7 +99,6 @@
         </ComboBox>
         
         <Border Grid.Row="5" 
-                Background="{DynamicResource CardBackgroundColor}"
                 BorderBrush="{DynamicResource BorderColor}"
                 BorderThickness="0,1,0,0"
                 Padding="24,16">
@@ -107,7 +106,6 @@
                 <Button Grid.Column="1"
                         Content="取消"
                         Command="{Binding CancelCommand}"
-                        Background="{DynamicResource BorderColor}"
                         Foreground="{DynamicResource TextPrimaryColor}"
                         FontSize="14"
                         Padding="24,10"
@@ -125,9 +123,6 @@
                         </Transitions>
                     </Button.Transitions>
                     <Button.Styles>
-                        <Style Selector="Button:pointerover">
-                            <Setter Property="Background" Value="#BDBDBD"/>
-                        </Style>
                         <Style Selector="Button:pressed">
                             <Setter Property="RenderTransform">
                                 <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
