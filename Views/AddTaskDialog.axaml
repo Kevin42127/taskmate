@@ -1,0 +1,206 @@
+<Window xmlns="https://github.com/avaloniaui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:vm="using:TaskMateApp.ViewModels"
+       xmlns:models="using:TaskMateApp.Models"
+       xmlns:utils="using:TaskMateApp.Utils"
+       x:Class="TaskMateApp.Views.AddTaskDialog"
+       x:DataType="vm:AddTaskDialogViewModel"
+       Title="新增待辦事項"
+       Width="500"
+       Height="420"
+       WindowStartupLocation="CenterOwner"
+       Background="{DynamicResource BackgroundColor}"
+       Icon="avares://TaskMateApp/Assets/app.ico"
+       Opacity="0"
+       RenderTransformOrigin="0.5,0.5">
+    <Window.RenderTransform>
+        <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+    </Window.RenderTransform>
+    <Window.Transitions>
+        <Transitions>
+            <DoubleTransition Property="Opacity" Duration="0:0:0.25"/>
+            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25"/>
+        </Transitions>
+    </Window.Transitions>
+    
+    <Window.Resources>
+        <utils:EditTitleConverter x:Key="EditTitleConverter"/>
+        <utils:PriorityConverter x:Key="PriorityConverter"/>
+    </Window.Resources>
+    
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+        <TextBlock Grid.Row="0"
+                   Text="{Binding IsEditMode, Converter={StaticResource EditTitleConverter}}"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryColor}"
+                   Margin="24,24,24,16"/>
+        
+        <TextBlock Grid.Row="1"
+                   Text="標題："
+                   FontSize="14"
+                   Foreground="{DynamicResource TextPrimaryColor}"
+                   VerticalAlignment="Center"
+                   Margin="24,0,24,8"/>
+        
+        <TextBox Grid.Row="2"
+                 x:Name="TitleTextBox"
+                 Text="{Binding Title, Mode=TwoWay}"
+                 Watermark="輸入待辦事項標題..."
+                 FontSize="14"
+                 Padding="12,10"
+                 BorderThickness="1"
+                 BorderBrush="{DynamicResource InputBorderColor}"
+                 Margin="24,0,24,16"
+                 SelectionBrush="{DynamicResource PrimaryColor}"
+                 SelectionForegroundBrush="White"
+                 GotFocus="TitleTextBox_GotFocus"
+                 TextInput="TitleTextBox_TextInput"
+                 TextChanged="TitleTextBox_TextChanged"
+                 KeyDown="TitleTextBox_KeyDown">
+            <TextBox.Styles>
+                <Style Selector="TextBox:focus">
+                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Style>
+            </TextBox.Styles>
+        </TextBox>
+        
+        <TextBlock Grid.Row="3"
+                   Text="描述："
+                   FontSize="14"
+                   Foreground="{DynamicResource TextPrimaryColor}"
+                   VerticalAlignment="Center"
+                   Margin="24,0,24,8"/>
+        
+        <TextBox Grid.Row="4"
+                 x:Name="DescriptionTextBox"
+                 Text="{Binding Description, Mode=TwoWay}"
+                 Watermark="輸入描述（選填）..."
+                 FontSize="14"
+                 Padding="12,10"
+                 BorderThickness="1"
+                 BorderBrush="{DynamicResource InputBorderColor}"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 MinHeight="80"
+                 Margin="24,0,24,16"
+                 SelectionBrush="{DynamicResource PrimaryColor}"
+                 SelectionForegroundBrush="White"
+                 GotFocus="DescriptionTextBox_GotFocus"
+                 TextInput="DescriptionTextBox_TextInput"
+                 TextChanged="DescriptionTextBox_TextChanged"
+                 KeyDown="DescriptionTextBox_KeyDown">
+            <TextBox.Styles>
+                <Style Selector="TextBox:focus">
+                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Style>
+            </TextBox.Styles>
+        </TextBox>
+        
+        <TextBlock Grid.Row="5"
+                   Text="優先級："
+                   FontSize="14"
+                   Foreground="{DynamicResource TextPrimaryColor}"
+                   VerticalAlignment="Center"
+                   Margin="24,0,24,8"/>
+        
+        <ComboBox Grid.Row="6"
+                  SelectedItem="{Binding Priority, Mode=TwoWay}"
+                  FontSize="14"
+                  Padding="12,10"
+                  BorderThickness="1"
+                  BorderBrush="{DynamicResource InputBorderColor}"
+                  Margin="24,0,24,16">
+            <ComboBox.Items>
+                <models:Priority>Low</models:Priority>
+                <models:Priority>Medium</models:Priority>
+                <models:Priority>High</models:Priority>
+            </ComboBox.Items>
+            <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="models:Priority">
+                    <TextBlock Text="{Binding Converter={StaticResource PriorityConverter}}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+            <ComboBox.Styles>
+                <Style Selector="ComboBox:focus">
+                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Style>
+            </ComboBox.Styles>
+        </ComboBox>
+        
+        <Border Grid.Row="7" 
+                Background="{DynamicResource CardBackgroundColor}"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="0,1,0,0"
+                Padding="24,16">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <Button Grid.Column="1"
+                        Content="取消"
+                        Command="{Binding CancelCommand}"
+                        Background="{DynamicResource BorderColor}"
+                        Foreground="{DynamicResource TextPrimaryColor}"
+                        FontSize="14"
+                        Padding="24,10"
+                        MinWidth="80"
+                        Margin="0,0,8,0"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </Button.RenderTransform>
+                    <Button.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                        </Transitions>
+                    </Button.Transitions>
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#BDBDBD"/>
+                        </Style>
+                        <Style Selector="Button:pressed">
+                            <Setter Property="RenderTransform">
+                                <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                            </Setter>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+                
+                <Button Grid.Column="2"
+                        Content="確定"
+                        Command="{Binding ConfirmCommand}"
+                        Background="{DynamicResource AccentOrangeColor}"
+                        Foreground="White"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Padding="24,10"
+                        MinWidth="80"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </Button.RenderTransform>
+                    <Button.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                        </Transitions>
+                    </Button.Transitions>
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#F57C00"/>
+                        </Style>
+                        <Style Selector="Button:pressed">
+                            <Setter Property="RenderTransform">
+                                <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                            </Setter>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

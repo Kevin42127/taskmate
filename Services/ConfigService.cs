@@ -1,102 +1,74 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
-using TodoApp.Models;
-using TodoApp.Utils;
+using TaskMateApp.Utils;
 
-namespace TodoApp.Services;
-
-public class ConfigService
+namespace TaskMateApp.Services
 {
-    private readonly string _configPath;
-
-    public ConfigService()
+    public class ConfigService
     {
-        var appDataPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "AIChatApp");
-        Directory.CreateDirectory(appDataPath);
-        _configPath = Path.Combine(appDataPath, Constants.ConfigFileName);
-    }
+        private readonly string _configFilePath;
+        private ConfigData _config;
 
-    public AppConfig LoadConfig()
-    {
-        if (!File.Exists(_configPath))
+        public ConfigService()
         {
-            return new AppConfig();
+            var appDataPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Constants.AppName
+            );
+            Directory.CreateDirectory(appDataPath);
+            _configFilePath = Path.Combine(appDataPath, Constants.ConfigFileName);
+            _config = LoadConfig();
         }
 
-        try
+        private ConfigData LoadConfig()
         {
-            var json = File.ReadAllText(_configPath);
-            var config = JsonSerializer.Deserialize<AppConfig>(json);
-            if (config == null)
+            try
             {
-                return new AppConfig();
+                if (!File.Exists(_configFilePath))
+                    return new ConfigData();
+
+                var json = File.ReadAllText(_configFilePath);
+                if (string.IsNullOrWhiteSpace(json))
+                    return new ConfigData();
+
+                return JsonSerializer.Deserialize<ConfigData>(json) ?? new ConfigData();
             }
-            
-            if (config.Todos != null)
+            catch
             {
-                foreach (var todo in config.Todos)
+                return new ConfigData();
+            }
+        }
+
+        public void SaveConfig()
+        {
+            try
+            {
+                var options = new JsonSerializerOptions
                 {
-                    if (todo.Tags == null)
-                    {
-                        todo.Tags = new List<string>();
-                    }
-                }
+                    WriteIndented = true
+                };
+                var json = JsonSerializer.Serialize(_config, options);
+                File.WriteAllText(_configFilePath, json);
             }
-            
-            return config;
+            catch
+            {
+            }
         }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"載入配置失敗: {ex.Message}");
-            return new AppConfig();
-        }
-    }
 
-    public void SaveConfig(AppConfig config)
-    {
-        try
+        public bool WindowMaximized
         {
-            var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-            var tempPath = _configPath + ".tmp";
-            File.WriteAllText(tempPath, json);
-            File.Move(tempPath, _configPath, true);
+            get => _config.WindowMaximized;
+            set
+            {
+                _config.WindowMaximized = value;
+                SaveConfig();
+            }
         }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"保存配置失敗: {ex.Message}");
-            throw;
-        }
-    }
 
-    public List<TodoItem> LoadTodos()
-    {
-        var config = LoadConfig();
-        return config.Todos ?? new List<TodoItem>();
-    }
-
-    public void SaveTodos(List<TodoItem> todos)
-    {
-        try
+        private class ConfigData
         {
-            var config = LoadConfig();
-            config.Todos = todos;
-            SaveConfig(config);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"保存待辦事項失敗: {ex.Message}");
-            throw;
+            public bool WindowMaximized { get; set; } = true;
         }
     }
 }
-
-public class AppConfig
-{
-    public List<TodoItem>? Todos { get; set; }
-}
-

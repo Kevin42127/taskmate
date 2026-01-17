@@ -1,23 +1,41 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="TodoApp.App"
+             x:Class="TaskMateApp.App"
              RequestedThemeVariant="Light">
-  <Application.Styles>
-    <FluentTheme />
-  </Application.Styles>
+    <Application.Styles>
+        <FluentTheme />
+        
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        
+        <Style Selector="TextBox">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        
+        <Style Selector="ComboBoxItem:first-child">
+            <Setter Property="Margin" Value="0,4,0,0"/>
+        </Style>
+    </Application.Styles>
 
-  <Application.Resources>
-    <ResourceDictionary>
-      <Color x:Key="BackgroundColor">#FFFFFF</Color>
-      <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}"/>
-      <Color x:Key="ForegroundColor">#212121</Color>
-      <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}"/>
-      <Color x:Key="PrimaryColor">#2196F3</Color>
-      <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
-      <Color x:Key="SecondaryColor">#F5F5F5</Color>
-      <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}"/>
-      <Color x:Key="BorderColor">#E0E0E0</Color>
-      <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
-    </ResourceDictionary>
-  </Application.Resources>
+    <Application.Resources>
+        <SolidColorBrush x:Key="PrimaryColor" Color="#2196F3"/>
+        <SolidColorBrush x:Key="PrimaryDarkColor" Color="#1976D2"/>
+        <SolidColorBrush x:Key="PrimaryLightColor" Color="#BBDEFB"/>
+        <SolidColorBrush x:Key="AccentOrangeColor" Color="#FF9800"/>
+        <SolidColorBrush x:Key="AccentGreenColor" Color="#4CAF50"/>
+        <SolidColorBrush x:Key="AccentRedColor" Color="#F44336"/>
+        <SolidColorBrush x:Key="AccentPurpleColor" Color="#9C27B0"/>
+        <SolidColorBrush x:Key="AccentCyanColor" Color="#00BCD4"/>
+        <SolidColorBrush x:Key="BackgroundColor" Color="#F5F5F5"/>
+        <SolidColorBrush x:Key="CardBackgroundColor" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="CompletedCardBackgroundColor" Color="#E8F5E9"/>
+        <SolidColorBrush x:Key="TextPrimaryColor" Color="#212121"/>
+        <SolidColorBrush x:Key="TextSecondaryColor" Color="#757575"/>
+        <SolidColorBrush x:Key="TextDisabledColor" Color="#BDBDBD"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="InputBorderColor" Color="#BDBDBD"/>
+    </Application.Resources>
 </Application>

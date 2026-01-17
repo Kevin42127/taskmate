@@ -1,86 +1,53 @@
+using System;
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
+using Avalonia.Threading;
 
-namespace TodoApp.Services;
-
-public class NotificationService
+namespace TaskMateApp.Services
 {
-    private Window? _ownerWindow;
-
-    public void Initialize(Window window)
+    public class NotificationService
     {
-        _ownerWindow = window;
-    }
+        private WindowNotificationManager? _notificationManager;
 
-    public void ShowSuccess(string message)
-    {
-        ShowMessage("成功", message);
-    }
-
-    public void ShowError(string message)
-    {
-        ShowMessage("錯誤", message);
-    }
-
-    public void ShowInfo(string message)
-    {
-        ShowMessage("資訊", message);
-    }
-
-    private void ShowMessage(string title, string message)
-    {
-        if (_ownerWindow != null)
+        public void Initialize(Window window)
         {
-            var messageBox = new MessageBox
+            var topLevel = TopLevel.GetTopLevel(window);
+            _notificationManager = new WindowNotificationManager(topLevel)
             {
-                Title = title,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                Position = NotificationPosition.TopRight,
+                MaxItems = 3
             };
-            messageBox.SetMessage(message);
-            messageBox.ShowDialog(_ownerWindow);
+        }
+
+        public void Show(string title, string message, NotificationType type = NotificationType.Information)
+        {
+            if (_notificationManager == null) return;
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                var notification = new Notification(title, message, type);
+                _notificationManager.Show(notification);
+            });
+        }
+
+        public void ShowSuccess(string message)
+        {
+            Show("成功", message, NotificationType.Success);
+        }
+
+        public void ShowError(string message)
+        {
+            Show("錯誤", message, NotificationType.Error);
+        }
+
+        public void ShowWarning(string message)
+        {
+            Show("警告", message, NotificationType.Warning);
+        }
+
+        public void ShowInfo(string message)
+        {
+            Show("資訊", message, NotificationType.Information);
         }
     }
 }
-
-public class MessageBox : Window
-{
-    private readonly TextBlock _textBlock;
-
-    public MessageBox()
-    {
-        Width = 300;
-        Height = 150;
-        CanResize = false;
-        Background = Avalonia.Media.Brushes.White;
-        
-        var panel = new StackPanel
-        {
-            Margin = new Avalonia.Thickness(20),
-            Spacing = 10
-        };
-        
-        _textBlock = new TextBlock
-        {
-            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-            FontSize = 14
-        };
-        
-        var button = new Button
-        {
-            Content = "確定",
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            Padding = new Avalonia.Thickness(20, 8)
-        };
-        
-        button.Click += (s, e) => Close();
-        
-        panel.Children.Add(_textBlock);
-        panel.Children.Add(button);
-        Content = panel;
-    }
-    
-    public void SetMessage(string message)
-    {
-        _textBlock.Text = message;
-    }
-}
-

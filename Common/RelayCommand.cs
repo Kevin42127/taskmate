@@ -1,70 +1,65 @@
 using System;
 using System.Windows.Input;
 
-namespace TodoApp.Common;
-
-public class RelayCommand : ICommand
+namespace TaskMateApp.Common
 {
-    private readonly Action _execute;
-    private readonly Func<bool>? _canExecute;
-
-    public RelayCommand(Action execute, Func<bool>? canExecute = null)
+    public class RelayCommand : ICommand
     {
-        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-        _canExecute = canExecute;
-    }
+        private readonly Action _execute;
+        private readonly Func<bool>? _canExecute;
 
-    public event EventHandler? CanExecuteChanged;
-
-    public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
-
-    public void Execute(object? parameter)
-    {
-        _execute();
-    }
-
-    public void RaiseCanExecuteChanged()
-    {
-        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-    }
-}
-
-public class RelayCommand<T> : ICommand
-{
-    private readonly Action<T?> _execute;
-    private readonly Func<T?, bool>? _canExecute;
-
-    public RelayCommand(Action<T?> execute, Func<T?, bool>? canExecute = null)
-    {
-        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-        _canExecute = canExecute;
-    }
-
-    public event EventHandler? CanExecuteChanged;
-
-    public bool CanExecute(object? parameter)
-    {
-        if (parameter is T item)
+        public RelayCommand(Action execute, Func<bool>? canExecute = null)
         {
-            return _canExecute?.Invoke(item) ?? true;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
         }
-        return _canExecute?.Invoke(default) ?? true;
-    }
 
-    public void Execute(object? parameter)
-    {
-        if (parameter is T item)
+        public event EventHandler? CanExecuteChanged;
+
+        public void RaiseCanExecuteChanged()
         {
-            _execute(item);
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
-        else
+
+        public bool CanExecute(object? parameter)
         {
-            _execute(default);
+            return _canExecute == null || _canExecute();
+        }
+
+        public void Execute(object? parameter)
+        {
+            _execute();
         }
     }
 
-    public void RaiseCanExecuteChanged()
+    public class RelayCommand<T> : ICommand
     {
-        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        private readonly Action<T> _execute;
+        private readonly Func<T, bool>? _canExecute;
+
+        public RelayCommand(Action<T> execute, Func<T, bool>? canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public event EventHandler? CanExecuteChanged;
+
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public bool CanExecute(object? parameter)
+        {
+            if (parameter == null && typeof(T).IsValueType)
+                return false;
+            return _canExecute == null || _canExecute((T)parameter!);
+        }
+
+        public void Execute(object? parameter)
+        {
+            _execute((T)parameter!);
+        }
     }
 }

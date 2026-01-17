@@ -1,250 +1,409 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:TodoApp.ViewModels"
-        xmlns:models="using:TodoApp.Models"
-        xmlns:utils="using:TodoApp.Utils"
-        x:Class="TodoApp.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Title="待辦事項管理器"
-        Width="1000" Height="700"
-        MinWidth="600" MinHeight="400"
-        WindowStartupLocation="CenterScreen"
-        Background="{DynamicResource BackgroundBrush}"
-        Icon="avares://TodoApp/Assets/app.ico">
-  <Window.Resources>
-    <utils:BoolInverseConverter x:Key="BoolInverse"/>
-    <utils:TodoItemBackgroundConverter x:Key="TodoItemBackground"/>
-    <utils:TodoItemBorderConverter x:Key="TodoItemBorderConverter"/>
-    <utils:TodoItemTextColorConverter x:Key="TodoItemTextColorConverter"/>
-    <utils:BoolToTextDecorationsConverter x:Key="BoolToTextDecorations"/>
-  </Window.Resources>
-  <Window.Styles>
-    <Style Selector="Button.delete-button">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="#757575"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Padding" Value="8"/>
-      <Setter Property="Cursor" Value="Hand"/>
-      <Setter Property="FontSize" Value="18"/>
-      <Setter Property="FontWeight" Value="Bold"/>
-      <Setter Property="Width" Value="32"/>
-      <Setter Property="Height" Value="32"/>
-      <Setter Property="HorizontalContentAlignment" Value="Center"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="Button.delete-button:pointerover">
-      <Setter Property="Background" Value="#FFEBEE"/>
-      <Setter Property="Foreground" Value="#F44336"/>
-      <Setter Property="Opacity" Value="1"/>
-    </Style>
-    <Style Selector="Border.todo-item-card">
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="12"/>
-      <Setter Property="Margin" Value="12"/>
-      <Setter Property="Padding" Value="20"/>
-      <Setter Property="MinHeight" Value="120"/>
-      <Setter Property="Width" Value="280"/>
-      <Setter Property="BoxShadow" Value="0 2 8 0 #1A000000"/>
-    </Style>
-    <Style Selector="Border.todo-item-card:pointerover">
-      <Setter Property="Background" Value="#FAFAFA"/>
-      <Setter Property="BorderBrush" Value="#BDBDBD"/>
-      <Setter Property="BoxShadow" Value="0 4 12 0 #1F000000"/>
-    </Style>
-    <Style Selector="ScrollViewer">
-      <Setter Property="Background" Value="#FAFAFA"/>
-      <Setter Property="Padding" Value="0,8"/>
-    </Style>
-    <Style Selector="Button.filter-button">
-      <Setter Property="Background" Value="#F5F5F5"/>
-      <Setter Property="Foreground" Value="#757575"/>
-    </Style>
-    <Style Selector="Button.filter-button.active">
-      <Setter Property="Background" Value="#E3F2FD"/>
-      <Setter Property="Foreground" Value="#1976D2"/>
-      <Setter Property="FontWeight" Value="SemiBold"/>
-    </Style>
-    <Style Selector="Button.filter-button:pointerover">
-      <Setter Property="Background" Value="#E0E0E0"/>
-    </Style>
-    <Style Selector="Button.filter-button.active:pointerover">
-      <Setter Property="Background" Value="#BBDEFB"/>
-    </Style>
-  </Window.Styles>
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:vm="using:TaskMateApp.ViewModels"
+       xmlns:models="using:TaskMateApp.Models"
+       xmlns:utils="using:TaskMateApp.Utils"
+       x:Class="TaskMateApp.Views.MainWindow"
+       x:DataType="vm:MainWindowViewModel"
+       Title="TaskMate"
+       Width="1200" Height="800"
+       WindowStartupLocation="CenterScreen"
+       Background="{DynamicResource BackgroundColor}"
+       Icon="avares://TaskMateApp/Assets/app.ico">
+    
+    <Window.Resources>
+        <utils:BoolToOpacityConverter x:Key="BoolToOpacityConverter"/>
+        <utils:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
+        <utils:CompletedBackgroundConverter x:Key="CompletedBackgroundConverter"/>
+        <utils:CompletedButtonConverter x:Key="CompletedButtonConverter"/>
+        <utils:StringToOpacityConverter x:Key="StringToOpacityConverter"/>
+        <utils:BorderColorConverter x:Key="BorderColorConverter"/>
+        <utils:CompletedBorderColorConverter x:Key="CompletedBorderColorConverter"/>
+        <utils:PriorityConverter x:Key="PriorityConverter"/>
+        <utils:PriorityColorConverter x:Key="PriorityColorConverter"/>
+    </Window.Resources>
 
-  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="0" 
-          PointerPressed="OnMainWindowPointerPressed"
-          PointerReleased="OnMainWindowPointerReleased"
-          Focusable="True">
-    <Border Grid.Row="0" Background="#F5F5F5" Padding="20,16" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1"
-            PointerPressed="OnMainWindowPointerPressed">
-      <Grid ColumnDefinitions="*,Auto,Auto">
-        <TextBlock Grid.Column="0" Text="待辦事項" FontSize="24" FontWeight="SemiBold" 
-                   Foreground="#212121"
-                   VerticalAlignment="Center"/>
-        <Button Grid.Column="1" 
-                Content="刪除全部"
-                Click="OnDeleteAllClick"
-                Background="#F44336"
-                Foreground="White"
-                Padding="20,10"
-                BorderThickness="0"
-                CornerRadius="6"
-                Cursor="Hand"
-                FontSize="14"
-                FontWeight="SemiBold"
-                Margin="0,0,12,0"
-                IsEnabled="{Binding HasTodos}"/>
-        <Button Grid.Column="2" 
-                Content="+ 新增"
-                Click="OnAddClick"
-                Background="#2196F3"
-                Foreground="White"
-                Padding="20,10"
-                BorderThickness="0"
-                CornerRadius="6"
-                Cursor="Hand"
-                FontSize="14"
-                FontWeight="SemiBold"/>
-      </Grid>
-    </Border>
+    <Grid RowDefinitions="Auto,Auto,*" Background="Transparent" PointerPressed="MainGrid_PointerPressed" Focusable="True">
+        <Border Grid.Row="0" 
+                Background="{DynamicResource PrimaryColor}" 
+                Padding="24,20">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="TaskMate - 任務夥伴" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           Foreground="White"
+                           VerticalAlignment="Center"/>
+                <Button Grid.Column="1"
+                        Command="{Binding CompleteAllCommand}"
+                        Background="#4CAF50"
+                        Foreground="White"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Padding="20,12"
+                        Margin="0,0,8,0"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Content="一鍵完成"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </Button.RenderTransform>
+                    <Button.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                        </Transitions>
+                    </Button.Transitions>
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#388E3C"/>
+                        </Style>
+                        <Style Selector="Button:disabled">
+                            <Setter Property="Background" Value="#BDBDBD"/>
+                            <Setter Property="Foreground" Value="#757575"/>
+                        </Style>
+                        <Style Selector="Button:pressed">
+                            <Setter Property="RenderTransform">
+                                <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                            </Setter>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+                <Button Grid.Column="2"
+                        Command="{Binding DeleteAllCommand}"
+                        Background="#F44336"
+                        Foreground="White"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Padding="20,12"
+                        Margin="0,0,8,0"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Content="一鍵刪除"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </Button.RenderTransform>
+                    <Button.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                        </Transitions>
+                    </Button.Transitions>
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#D32F2F"/>
+                        </Style>
+                        <Style Selector="Button:disabled">
+                            <Setter Property="Background" Value="#BDBDBD"/>
+                            <Setter Property="Foreground" Value="#757575"/>
+                        </Style>
+                        <Style Selector="Button:pressed">
+                            <Setter Property="RenderTransform">
+                                <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                            </Setter>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+                <Border Grid.Column="3"
+                        Background="#FF9800"
+                        CornerRadius="8"
+                        Padding="24,12"
+                        Cursor="Hand"
+                        PointerPressed="AddTaskButton_PointerPressed"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </Border.RenderTransform>
+                    <Border.Transitions>
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                        </Transitions>
+                    </Border.Transitions>
+                    <Border.Styles>
+                        <Style Selector="Border:pointerover">
+                            <Setter Property="Background" Value="#F57C00"/>
+                        </Style>
+                        <Style Selector="Border:pressed">
+                            <Setter Property="RenderTransform">
+                                <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                            </Setter>
+                        </Style>
+                    </Border.Styles>
+                    <TextBlock Text="新增待辦"
+                               Foreground="White"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+        </Border>
 
-    <Border Grid.Row="1" Background="#FAFAFA" Padding="20,12" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
-      <Grid ColumnDefinitions="*,Auto">
-        <TextBox Grid.Column="0"
-                 x:Name="SearchTextBox"
-                 Text="{Binding SearchText}"
-                 Watermark="搜尋待辦事項..."
-                 Height="40"
-                 FontSize="14"
-                 Padding="12,0"
-                 VerticalAlignment="Center"
-                 Background="White"
-                 BorderBrush="#E0E0E0"
-                 BorderThickness="1"
-                 CornerRadius="6"/>
-        <StackPanel Grid.Column="1" Orientation="Horizontal" x:Name="FilterButtons" Margin="12,0,0,0">
-          <Button Content="全部"
-                  Padding="16,8"
-                  Background="#E3F2FD"
-                  Foreground="#1976D2"
-                  BorderThickness="0"
-                  CornerRadius="6"
-                  FontSize="13"
-                  FontWeight="SemiBold"
-                  Cursor="Hand"
-                  Tag="All"
-                  Click="OnFilterClick"
-                  Classes="filter-button active"
-                  Margin="0,0,8,0"/>
-          <Button Content="待完成"
-                  Padding="16,8"
-                  Background="#F5F5F5"
-                  Foreground="#757575"
-                  BorderThickness="0"
-                  CornerRadius="6"
-                  FontSize="13"
-                  Cursor="Hand"
-                  Tag="Pending"
-                  Click="OnFilterClick"
-                  Classes="filter-button"
-                  Margin="0,0,8,0"/>
-          <Button Content="已完成"
-                  Padding="16,8"
-                  Background="#F5F5F5"
-                  Foreground="#757575"
-                  BorderThickness="0"
-                  CornerRadius="6"
-                  FontSize="13"
-                  Cursor="Hand"
-                  Tag="Completed"
-                  Click="OnFilterClick"
-                  Classes="filter-button"/>
-        </StackPanel>
-      </Grid>
-    </Border>
+        <Border Grid.Row="1"
+                Background="{DynamicResource CardBackgroundColor}"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="0,0,0,1"
+                Padding="24,16">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                <TextBox Grid.Column="0"
+                         x:Name="SearchTextBox"
+                         Text="{Binding SearchText, Mode=TwoWay}"
+                         Watermark="搜尋任務..."
+                         FontSize="14"
+                         Padding="12,10"
+                         BorderThickness="1"
+                         BorderBrush="{DynamicResource InputBorderColor}"
+                         Margin="0,0,16,0"
+                         SelectionBrush="{DynamicResource PrimaryColor}"
+                         SelectionForegroundBrush="White"
+                         GotFocus="SearchTextBox_GotFocus"
+                         TextInput="SearchTextBox_TextInput"
+                         TextChanged="SearchTextBox_TextChanged">
+                    <TextBox.Styles>
+                        <Style Selector="TextBox:focus">
+                            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColor}"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                        </Style>
+                    </TextBox.Styles>
+                </TextBox>
+                <ComboBox Grid.Column="1"
+                          SelectedItem="{Binding FilterStatus, Mode=TwoWay}"
+                          FontSize="14"
+                          Padding="12,10"
+                          MinWidth="120"
+                          Margin="0,0,8,0"
+                          BorderThickness="1"
+                          BorderBrush="{DynamicResource InputBorderColor}">
+                    <ComboBox.Items>
+                        <x:String>全部</x:String>
+                        <x:String>未完成</x:String>
+                        <x:String>已完成</x:String>
+                    </ComboBox.Items>
+                    <ComboBox.Styles>
+                        <Style Selector="ComboBox:focus">
+                            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColor}"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                        </Style>
+                    </ComboBox.Styles>
+                </ComboBox>
+                <ComboBox Grid.Column="2"
+                          SelectedItem="{Binding FilterPriority, Mode=TwoWay}"
+                          FontSize="14"
+                          Padding="12,10"
+                          MinWidth="120"
+                          Margin="0,0,8,0"
+                          BorderThickness="1"
+                          BorderBrush="{DynamicResource InputBorderColor}">
+                    <ComboBox.Items>
+                        <x:String>全部優先級</x:String>
+                        <x:String>高</x:String>
+                        <x:String>中</x:String>
+                        <x:String>低</x:String>
+                    </ComboBox.Items>
+                    <ComboBox.Styles>
+                        <Style Selector="ComboBox:focus">
+                            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColor}"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                        </Style>
+                    </ComboBox.Styles>
+                </ComboBox>
+            </Grid>
+        </Border>
 
-    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" 
-                  HorizontalScrollBarVisibility="Disabled"
-                  PointerPressed="OnMainWindowPointerPressed">
-      <ItemsControl ItemsSource="{Binding FilteredTodos}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <WrapPanel Orientation="Horizontal" Margin="16"/>
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="models:TodoItem">
-            <Border Background="{Binding IsCompleted, Converter={StaticResource TodoItemBackground}}"
-                    BorderBrush="{Binding IsCompleted, Converter={StaticResource TodoItemBorderConverter}}"
-                    Classes="todo-item-card"
-                    PointerPressed="OnCardPointerPressed"
-                    Cursor="Hand">
-              <Grid RowDefinitions="Auto,*,Auto">
-                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
-                  <CheckBox Grid.Column="0" 
-                           IsChecked="{Binding IsCompleted}"
-                           IsCheckedChanged="OnCheckBoxChanged"
-                           VerticalAlignment="Top"
-                           HorizontalAlignment="Left"
-                           Width="24"
-                           Height="24"
-                           Cursor="Hand"/>
-                  <Button Grid.Column="1"
-                         Content="×"
-                         Classes="delete-button"
-                         Click="OnDeleteClick"
-                         Opacity="0.6"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Top"/>
-                </Grid>
-                <TextBlock Grid.Row="1" 
-                          Text="{Binding Title}" 
-                          TextWrapping="Wrap"
-                          Foreground="{Binding IsCompleted, Converter={StaticResource TodoItemTextColorConverter}}"
-                          FontSize="15"
-                          VerticalAlignment="Center"
-                          Margin="0,12,0,8"
-                          TextDecorations="{Binding IsCompleted, Converter={StaticResource BoolToTextDecorations}}"/>
-                <StackPanel Grid.Row="2" 
-                           Orientation="Horizontal" 
-                           Spacing="4" 
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Bottom"
-                           Margin="0,0,0,8">
-                  <ItemsControl ItemsSource="{Binding Tags}">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="4"/>
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate>
-                        <Border Background="#F5F5F5" 
-                                Padding="4,2"
-                                CornerRadius="4">
-                          <TextBlock Text="{Binding}" 
-                                     FontSize="10"
-                                     Foreground="#757575"/>
+        <ScrollViewer Grid.Row="2" 
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Margin="24">
+            <ItemsControl ItemsSource="{Binding FilteredTasks}" x:Name="TasksItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="models:TodoItem">
+                        <Border Width="280"
+                                MinHeight="200"
+                                Margin="0,0,16,16"
+                                Background="{Binding IsCompleted, Converter={StaticResource CompletedBackgroundConverter}}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="16"
+                                Cursor="Hand"
+                                RenderTransformOrigin="0.5,0.5"
+                                Opacity="0"
+                                AttachedToVisualTree="TaskCard_AttachedToVisualTree">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                            </Border.RenderTransform>
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.3"/>
+                                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3"/>
+                                    <BrushTransition Property="Background" Duration="0:0:0.3"/>
+                                    <BrushTransition Property="BorderBrush" Duration="0:0:0.3"/>
+                                </Transitions>
+                            </Border.Transitions>
+                            <Border.BorderBrush>
+                                <MultiBinding Converter="{StaticResource CompletedBorderColorConverter}">
+                                    <Binding Path="IsCompleted"/>
+                                    <Binding Path="BorderColor"/>
+                                </MultiBinding>
+                            </Border.BorderBrush>
+                            <Border.Styles>
+                                <Style Selector="Border:pointerover">
+                                    <Setter Property="RenderTransform">
+                                        <ScaleTransform ScaleX="1.02" ScaleY="1.02"/>
+                                    </Setter>
+                                </Style>
+                            </Border.Styles>
+                            <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding Title}"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimaryColor}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,8,0"
+                                               MaxHeight="48"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <Border Grid.Column="1"
+                                            Background="{Binding Priority, Converter={StaticResource PriorityColorConverter}}"
+                                            CornerRadius="4"
+                                            Padding="8,4"
+                                            VerticalAlignment="Top">
+                                        <TextBlock Text="{Binding Priority, Converter={StaticResource PriorityConverter}}"
+                                                   FontSize="11"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="White"/>
+                                    </Border>
+                                </Grid>
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding Description}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryColor}"
+                                           TextWrapping="Wrap"
+                                           Opacity="{Binding Description, Converter={StaticResource StringToOpacityConverter}}"
+                                           Margin="0,0,0,8"
+                                           MaxHeight="60"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Row="2"
+                                           Text="{Binding CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextSecondaryColor}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="3"
+                                           Text="{Binding CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextSecondaryColor}"
+                                           VerticalAlignment="Bottom"
+                                           Opacity="0"/>
+                                <StackPanel Grid.Row="4" 
+                                            Orientation="Horizontal" 
+                                            HorizontalAlignment="Right"
+                                            Margin="0,8,0,0">
+                                    <Button Content="編輯"
+                                            Click="EditButton_Click"
+                                            Tag="{Binding}"
+                                            Background="#9C27B0"
+                                            Foreground="White"
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Padding="16,8"
+                                            Margin="0,0,8,0"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            RenderTransformOrigin="0.5,0.5">
+                                        <Button.RenderTransform>
+                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                        </Button.RenderTransform>
+                                        <Button.Transitions>
+                                            <Transitions>
+                                                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                                            </Transitions>
+                                        </Button.Transitions>
+                                        <Button.Styles>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="#7B1FA2"/>
+                                            </Style>
+                                            <Style Selector="Button:pressed">
+                                                <Setter Property="RenderTransform">
+                                                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Styles>
+                                    </Button>
+                                    <Button Content="完成"
+                                            Click="ToggleCompleteButton_Click"
+                                            Tag="{Binding}"
+                                            Background="{Binding IsCompleted, Converter={StaticResource CompletedButtonConverter}}"
+                                            Foreground="White"
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Padding="16,8"
+                                            Margin="0,0,8,0"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            RenderTransformOrigin="0.5,0.5">
+                                        <Button.RenderTransform>
+                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                        </Button.RenderTransform>
+                                        <Button.Transitions>
+                                            <Transitions>
+                                                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                                            </Transitions>
+                                        </Button.Transitions>
+                                        <Button.Styles>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="#388E3C"/>
+                                            </Style>
+                                            <Style Selector="Button:disabled">
+                                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                                                <Setter Property="Opacity" Value="0.6"/>
+                                            </Style>
+                                            <Style Selector="Button:pressed">
+                                                <Setter Property="RenderTransform">
+                                                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Styles>
+                                    </Button>
+                                    <Button Content="刪除"
+                                            Click="DeleteButton_Click"
+                                            Tag="{Binding}"
+                                            Background="{DynamicResource AccentRedColor}"
+                                            Foreground="White"
+                                            FontSize="12"
+                                            Padding="16,8"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            RenderTransformOrigin="0.5,0.5">
+                                        <Button.RenderTransform>
+                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                        </Button.RenderTransform>
+                                        <Button.Transitions>
+                                            <Transitions>
+                                                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                                            </Transitions>
+                                        </Button.Transitions>
+                                        <Button.Styles>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="#D32F2F"/>
+                                            </Style>
+                                            <Style Selector="Button:pressed">
+                                                <Setter Property="RenderTransform">
+                                                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Styles>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
                         </Border>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                </StackPanel>
-              </Grid>
-            </Border>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-    </ScrollViewer>
-
-    <Border Grid.Row="3" Background="#F9F9F9" 
-            Padding="20,12" HorizontalAlignment="Stretch"
-            BorderBrush="#E0E0E0" BorderThickness="0,1,0,0">
-      <TextBlock Text="{Binding StatusText}"
-                 Foreground="#757575"
-                 FontSize="13"
-                 VerticalAlignment="Center"/>
-    </Border>
-  </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 </Window>

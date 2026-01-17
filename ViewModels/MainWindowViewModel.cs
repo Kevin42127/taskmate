@@ -1,356 +1,267 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
-using TodoApp.Models;
-using TodoApp.Services;
-using TodoApp.Common;
+using TaskMateApp.Common;
+using TaskMateApp.Models;
+using TaskMateApp.Services;
+using TaskMateApp.Utils;
 
-namespace TodoApp.ViewModels;
-
-public enum FilterType
+namespace TaskMateApp.ViewModels
 {
-    All,
-    Pending,
-    Completed
-}
-
-public class MainWindowViewModel : ViewModelBase
-{
-    private readonly ConfigService _configService;
-    private readonly NotificationService _notificationService;
-    private string _statusText = "就緒";
-    private string _searchText = string.Empty;
-    private FilterType _filterType = FilterType.All;
-    private Timer? _autoSaveTimer;
-    private Timer? _searchDebounceTimer;
-    private bool _isDirty = false;
-    
-    private int? _cachedTotalCount;
-    private int? _cachedCompletedCount;
-    private int? _cachedPendingCount;
-    private bool? _cachedHasTodos;
-
-    public MainWindowViewModel(ConfigService? configService = null, NotificationService? notificationService = null)
+    public class MainWindowViewModel : ViewModelBase
     {
-        _configService = configService ?? new ConfigService();
-        _notificationService = notificationService ?? new NotificationService();
-        Todos = new ObservableCollection<TodoItem>();
-        FilteredTodos = new ObservableCollection<TodoItem>();
-        
-        LoadTodos();
-        
-        DeleteCommand = new RelayCommand<TodoItem>((item) => DeleteTodo(item));
-        ToggleCompleteCommand = new RelayCommand<TodoItem>((item) => ToggleComplete(item));
-        DeleteAllCommand = new RelayCommand(() => DeleteAllTodos(), () => HasTodos);
-        EditCommand = new RelayCommand<TodoItem>((item) => EditTodo(item));
-        
-        _autoSaveTimer = new Timer(AutoSaveCallback, null, Timeout.Infinite, 2000);
-        _searchDebounceTimer = new Timer(SearchDebounceCallback, null, Timeout.Infinite, 300);
-        
-        Todos.CollectionChanged += (s, e) => InvalidateCache();
-    }
+        private readonly DataService _dataService;
+        private string _searchText = string.Empty;
+        private string _filterStatus = "全部";
+        private string _filterPriority = "全部優先級";
 
-    public ObservableCollection<TodoItem> Todos { get; }
-    public ObservableCollection<TodoItem> FilteredTodos { get; }
+        public ObservableCollection<TodoItem> Tasks { get; } = new();
+        public ObservableCollection<TodoItem> FilteredTasks { get; } = new();
 
-    public string StatusText
-    {
-        get => _statusText;
-        set
+        public string SearchText
         {
-            _statusText = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string SearchText
-    {
-        get => _searchText;
-        set
-        {
-            _searchText = value;
-            OnPropertyChanged();
-            if (_searchDebounceTimer != null)
+            get => _searchText;
+            set
             {
-                _searchDebounceTimer.Change(300, Timeout.Infinite);
-            }
-        }
-    }
-
-    public FilterType FilterType
-    {
-        get => _filterType;
-        set
-        {
-            _filterType = value;
-            OnPropertyChanged();
-            ApplyFilter();
-        }
-    }
-
-    public int TotalCount
-    {
-        get
-        {
-            if (!_cachedTotalCount.HasValue)
-            {
-                _cachedTotalCount = Todos.Count;
-            }
-            return _cachedTotalCount.Value;
-        }
-    }
-
-    public int CompletedCount
-    {
-        get
-        {
-            if (!_cachedCompletedCount.HasValue)
-            {
-                _cachedCompletedCount = Todos.Count(t => t.IsCompleted);
-            }
-            return _cachedCompletedCount.Value;
-        }
-    }
-
-    public int PendingCount
-    {
-        get
-        {
-            if (!_cachedPendingCount.HasValue)
-            {
-                _cachedPendingCount = Todos.Count(t => !t.IsCompleted);
-            }
-            return _cachedPendingCount.Value;
-        }
-    }
-
-    public bool HasTodos
-    {
-        get
-        {
-            if (!_cachedHasTodos.HasValue)
-            {
-                _cachedHasTodos = Todos.Count > 0;
-            }
-            return _cachedHasTodos.Value;
-        }
-    }
-
-    public int FilteredCount => FilteredTodos.Count;
-
-    public ICommand DeleteCommand { get; }
-    public ICommand ToggleCompleteCommand { get; }
-    public ICommand DeleteAllCommand { get; }
-    public ICommand EditCommand { get; }
-
-    private void InvalidateCache()
-    {
-        _cachedTotalCount = null;
-        _cachedCompletedCount = null;
-        _cachedPendingCount = null;
-        _cachedHasTodos = null;
-    }
-
-    private void SearchDebounceCallback(object? state)
-    {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() => ApplyFilter(), Avalonia.Threading.DispatcherPriority.Normal);
-    }
-
-    private void LoadTodos()
-    {
-        try
-        {
-            var todos = _configService.LoadTodos();
-            Todos.Clear();
-            foreach (var todo in todos.OrderByDescending(t => t.CreatedAt))
-            {
-                Todos.Add(todo);
-            }
-            ApplyFilter();
-            UpdateStatus();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"載入待辦事項失敗: {ex.Message}");
-            _notificationService?.ShowError("載入待辦事項失敗");
-        }
-    }
-
-    public void SaveTodos()
-    {
-        try
-        {
-            _configService.SaveTodos(Todos.ToList());
-            _isDirty = false;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"保存待辦事項失敗: {ex.Message}");
-            _notificationService?.ShowError("保存待辦事項失敗");
-        }
-    }
-
-    public void MarkDirty()
-    {
-        _isDirty = true;
-        if (_autoSaveTimer != null)
-        {
-            _autoSaveTimer.Change(2000, Timeout.Infinite);
-        }
-    }
-
-    private void AutoSaveCallback(object? state)
-    {
-        if (_isDirty)
-        {
-            SaveTodos();
-        }
-    }
-
-    public void ApplyFilter()
-    {
-        var query = Todos.AsEnumerable();
-
-        if (!string.IsNullOrWhiteSpace(SearchText))
-        {
-            var searchLower = SearchText.ToLowerInvariant();
-            query = query.Where(t => t.Title.ToLowerInvariant().Contains(searchLower) ||
-                                   (t.Tags != null && t.Tags.Any(tag => tag.ToLowerInvariant().Contains(searchLower))));
-        }
-
-        query = FilterType switch
-        {
-            FilterType.Pending => query.Where(t => !t.IsCompleted),
-            FilterType.Completed => query.Where(t => t.IsCompleted),
-            _ => query
-        };
-
-        var newFilteredItems = query.OrderByDescending(t => t.CreatedAt).ToList();
-        
-        var itemsToRemove = FilteredTodos.Where(item => !newFilteredItems.Any(newItem => newItem.Id == item.Id)).ToList();
-        var itemsToAdd = newFilteredItems.Where(newItem => !FilteredTodos.Any(item => item.Id == newItem.Id)).ToList();
-        var itemsToUpdate = FilteredTodos.Where(item => newFilteredItems.Any(newItem => newItem.Id == item.Id && 
-            (newItem.Title != item.Title || newItem.IsCompleted != item.IsCompleted))).ToList();
-
-        foreach (var item in itemsToRemove)
-        {
-            FilteredTodos.Remove(item);
-        }
-
-        foreach (var newItem in itemsToAdd)
-        {
-            var insertIndex = newFilteredItems.IndexOf(newItem);
-            if (insertIndex < FilteredTodos.Count)
-            {
-                FilteredTodos.Insert(insertIndex, newItem);
-            }
-            else
-            {
-                FilteredTodos.Add(newItem);
+                if (SetProperty(ref _searchText, value))
+                {
+                    ApplyFilters();
+                }
             }
         }
 
-        foreach (var item in itemsToUpdate)
+        public string FilterStatus
         {
-            var newItem = newFilteredItems.First(n => n.Id == item.Id);
-            var index = FilteredTodos.IndexOf(item);
-            FilteredTodos[index] = newItem;
-        }
-        
-        OnPropertyChanged(nameof(FilteredCount));
-    }
-
-    public void UpdateStatus()
-    {
-        InvalidateCache();
-        StatusText = $"總計: {TotalCount} | 已完成: {CompletedCount} | 待完成: {PendingCount}";
-        OnPropertyChanged(nameof(TotalCount));
-        OnPropertyChanged(nameof(CompletedCount));
-        OnPropertyChanged(nameof(PendingCount));
-        OnPropertyChanged(nameof(HasTodos));
-        if (DeleteAllCommand is RelayCommand cmd)
-        {
-            cmd.RaiseCanExecuteChanged();
-        }
-    }
-
-    private void DeleteTodo(TodoItem? item)
-    {
-        if (item == null)
-        {
-            return;
+            get => _filterStatus;
+            set
+            {
+                if (SetProperty(ref _filterStatus, value))
+                {
+                    ApplyFilters();
+                }
+            }
         }
 
-        Todos.Remove(item);
-        ApplyFilter();
-        MarkDirty();
-        UpdateStatus();
-        _notificationService?.ShowSuccess("待辦事項已刪除");
-    }
-
-    private void ToggleComplete(TodoItem? item)
-    {
-        if (item == null)
+        public string FilterPriority
         {
-            return;
+            get => _filterPriority;
+            set
+            {
+                if (SetProperty(ref _filterPriority, value))
+                {
+                    ApplyFilters();
+                }
+            }
         }
 
-        item.IsCompleted = !item.IsCompleted;
-        item.CompletedAt = item.IsCompleted ? DateTime.Now : null;
-        ApplyFilter();
-        MarkDirty();
-        UpdateStatus();
-    }
+        public ICommand DeleteTaskCommand { get; }
+        public ICommand ToggleCompleteCommand { get; }
+        public ICommand CompleteAllCommand { get; }
+        public ICommand DeleteAllCommand { get; }
 
-    public void EditTodo(TodoItem? item)
-    {
-        if (item == null)
+        public MainWindowViewModel()
         {
-            return;
+            _dataService = new DataService();
+            DeleteTaskCommand = new RelayCommand<TodoItem>(DeleteTask);
+            ToggleCompleteCommand = new RelayCommand<TodoItem>(ToggleComplete);
+            CompleteAllCommand = new RelayCommand(CompleteAll, () => Tasks.Any(t => !t.IsCompleted));
+            DeleteAllCommand = new RelayCommand(DeleteAll, () => Tasks.Count > 0);
+
+            Tasks.CollectionChanged += Tasks_CollectionChanged;
+
+            _ = LoadTasksAsync();
         }
 
-        EditTodoRequested?.Invoke(item);
-    }
-
-    public void UpdateTodo(TodoItem item, string newTitle, List<string>? tags = null)
-    {
-        if (string.IsNullOrWhiteSpace(newTitle))
+        private async Task LoadTasksAsync()
         {
-            return;
+            var tasks = await _dataService.LoadTasksAsync();
+            foreach (var task in tasks)
+            {
+                if (string.IsNullOrEmpty(task.BorderColor))
+                {
+                    task.BorderColor = GetRandomBorderColor();
+                }
+                task.PropertyChanged += Task_PropertyChanged;
+                Tasks.Add(task);
+            }
+            ApplyFilters();
+            ((RelayCommand)CompleteAllCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)DeleteAllCommand).RaiseCanExecuteChanged();
         }
 
-        item.Title = newTitle.Trim();
-        if (tags != null)
+        public void AddTask(string title, string description, Priority priority = Priority.Medium)
         {
-            item.Tags = tags;
+            if (string.IsNullOrWhiteSpace(title))
+                return;
+
+            var newTask = new TodoItem
+            {
+                Title = title.Trim(),
+                Description = description.Trim(),
+                Priority = priority,
+                BorderColor = GetRandomBorderColor()
+            };
+
+            newTask.PropertyChanged += Task_PropertyChanged;
+            Tasks.Add(newTask);
+            ((RelayCommand)CompleteAllCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)DeleteAllCommand).RaiseCanExecuteChanged();
+            _ = SaveTasksAsync();
         }
-        ApplyFilter();
-        MarkDirty();
-        _notificationService?.ShowSuccess("待辦事項已更新");
-    }
 
-    public event Action<TodoItem>? EditTodoRequested;
-
-    public void DeleteAllTodos()
-    {
-        if (Todos.Count == 0)
+        public void EditTask(string taskId, string title, string description, Priority priority)
         {
-            return;
+            var task = Tasks.FirstOrDefault(t => t.Id == taskId);
+            if (task == null) return;
+
+            task.Title = title.Trim();
+            task.Description = description.Trim();
+            task.Priority = priority;
+
+            ((RelayCommand)CompleteAllCommand).RaiseCanExecuteChanged();
+            _ = SaveTasksAsync();
         }
 
-        Todos.Clear();
-        ApplyFilter();
-        MarkDirty();
-        UpdateStatus();
-        _notificationService?.ShowSuccess("所有待辦事項已刪除");
-    }
+        private void DeleteTask(TodoItem? task)
+        {
+            if (task == null) return;
 
-    public void Dispose()
-    {
-        _autoSaveTimer?.Dispose();
-        _searchDebounceTimer?.Dispose();
+            task.PropertyChanged -= Task_PropertyChanged;
+            Tasks.Remove(task);
+            ((RelayCommand)CompleteAllCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)DeleteAllCommand).RaiseCanExecuteChanged();
+            _ = SaveTasksAsync();
+        }
+
+        private void ToggleComplete(TodoItem? task)
+        {
+            if (task == null) return;
+
+            task.IsCompleted = !task.IsCompleted;
+            task.CompletedAt = task.IsCompleted ? DateTime.Now : null;
+
+            ((RelayCommand)CompleteAllCommand).RaiseCanExecuteChanged();
+            _ = SaveTasksAsync();
+        }
+
+        private string GetRandomBorderColor()
+        {
+            var random = new Random();
+            return Constants.CardBorderColors[random.Next(Constants.CardBorderColors.Length)];
+        }
+
+        private void CompleteAll()
+        {
+            var incompleteTasks = Tasks.Where(t => !t.IsCompleted).ToList();
+            foreach (var task in incompleteTasks)
+            {
+                task.IsCompleted = true;
+                task.CompletedAt = DateTime.Now;
+            }
+
+            if (incompleteTasks.Any())
+            {
+                ((RelayCommand)CompleteAllCommand).RaiseCanExecuteChanged();
+                ((RelayCommand)DeleteAllCommand).RaiseCanExecuteChanged();
+                _ = SaveTasksAsync();
+            }
+        }
+
+        private void DeleteAll()
+        {
+            foreach (var task in Tasks)
+            {
+                task.PropertyChanged -= Task_PropertyChanged;
+            }
+            Tasks.Clear();
+            ((RelayCommand)CompleteAllCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)DeleteAllCommand).RaiseCanExecuteChanged();
+            _ = SaveTasksAsync();
+        }
+
+        private void Tasks_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (TodoItem task in e.NewItems)
+                {
+                    task.PropertyChanged += Task_PropertyChanged;
+                }
+            }
+            if (e.OldItems != null)
+            {
+                foreach (TodoItem task in e.OldItems)
+                {
+                    task.PropertyChanged -= Task_PropertyChanged;
+                }
+            }
+            ApplyFilters();
+        }
+
+        private void Task_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TodoItem.Title) || 
+                e.PropertyName == nameof(TodoItem.Description) ||
+                e.PropertyName == nameof(TodoItem.IsCompleted) ||
+                e.PropertyName == nameof(TodoItem.Priority))
+            {
+                ApplyFilters();
+            }
+        }
+
+        private void ApplyFilters()
+        {
+            FilteredTasks.Clear();
+
+            var filtered = Tasks.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var searchLower = SearchText.ToLowerInvariant();
+                filtered = filtered.Where(t => 
+                    t.Title.ToLowerInvariant().Contains(searchLower) ||
+                    t.Description.ToLowerInvariant().Contains(searchLower));
+            }
+
+            if (FilterStatus != "全部")
+            {
+                filtered = FilterStatus switch
+                {
+                    "未完成" => filtered.Where(t => !t.IsCompleted),
+                    "已完成" => filtered.Where(t => t.IsCompleted),
+                    _ => filtered
+                };
+            }
+
+            if (FilterPriority != "全部優先級")
+            {
+                var priority = FilterPriority switch
+                {
+                    "高" => Priority.High,
+                    "中" => Priority.Medium,
+                    "低" => Priority.Low,
+                    _ => (Priority?)null
+                };
+
+                if (priority.HasValue)
+                {
+                    filtered = filtered.Where(t => t.Priority == priority.Value);
+                }
+            }
+
+            foreach (var task in filtered)
+            {
+                FilteredTasks.Add(task);
+            }
+        }
+
+        private async Task SaveTasksAsync()
+        {
+            await _dataService.SaveTasksAsync(Tasks.ToList());
+        }
     }
 }
