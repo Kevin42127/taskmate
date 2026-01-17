@@ -257,7 +257,7 @@
                                     </Setter>
                                 </Style>
                             </Border.Styles>
-                            <Grid RowDefinitions="Auto,Auto,*,Auto">
+                            <Grid RowDefinitions="Auto,*,Auto">
                                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0"
                                                Text="{Binding Title}"
@@ -279,20 +279,10 @@
                                                    Foreground="White"/>
                                     </Border>
                                 </Grid>
-                                <TextBlock Grid.Row="1"
-                                           Text="{Binding CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"
-                                           FontSize="11"
-                                           Foreground="{DynamicResource TextSecondaryColor}"
-                                           Margin="0,0,0,8"/>
-                                <TextBlock Grid.Row="2"
-                                           Text="{Binding CreatedAt, Converter={StaticResource DateTimeToStringConverter}}"
-                                           FontSize="11"
-                                           Foreground="{DynamicResource TextSecondaryColor}"
-                                           VerticalAlignment="Bottom"
-                                           Opacity="0"/>
-                                <StackPanel Grid.Row="3" 
+                                <StackPanel Grid.Row="2" 
                                             Orientation="Horizontal" 
                                             HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
                                             Margin="0,8,0,0">
                                     <Button Content="編輯"
                                             Click="EditButton_Click"
