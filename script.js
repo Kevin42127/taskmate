@@ -1,8 +1,56 @@
+document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
 document.addEventListener('DOMContentLoaded', function() {
     const downloadBtn = document.querySelector('.download-btn');
     const navLinks = document.querySelectorAll('.nav-link');
     const menuToggle = document.querySelector('.menu-toggle');
     const nav = document.querySelector('.nav');
+
+    const carousel = document.querySelector('.hero-preview.carousel');
+    if (carousel) {
+        const track = carousel.querySelector('.carousel-track');
+        const inner = carousel.querySelector('.carousel-inner');
+        const prevBtn = carousel.querySelector('.carousel-prev');
+        const nextBtn = carousel.querySelector('.carousel-next');
+        const dots = carousel.querySelectorAll('.carousel-dot');
+        const total = dots.length;
+        var currentIndex = 0;
+
+        function goTo(i) {
+            if (i < 0 || i >= total) return;
+            currentIndex = i;
+            track.style.transform = 'translateX(-' + i * 100 + '%)';
+            dots.forEach(function(d, j) { d.classList.toggle('active', j === i); });
+        }
+
+        if (prevBtn) prevBtn.addEventListener('click', function() { goTo((currentIndex - 1 + total) % total); });
+        if (nextBtn) nextBtn.addEventListener('click', function() { goTo((currentIndex + 1) % total); });
+        dots.forEach(function(dot, i) { dot.addEventListener('click', function() { goTo(i); }); });
+
+        if (inner) {
+            var startX = 0, startY = 0, isHorizontal = null;
+            inner.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                isHorizontal = null;
+            }, { passive: true });
+            inner.addEventListener('touchmove', function(e) {
+                if (isHorizontal === null) {
+                    var dx = e.touches[0].clientX - startX, dy = e.touches[0].clientY - startY;
+                    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) isHorizontal = Math.abs(dx) > Math.abs(dy);
+                }
+                if (isHorizontal === true) e.preventDefault();
+            }, { passive: false });
+            inner.addEventListener('touchend', function(e) {
+                var dx = e.changedTouches[0].clientX - startX;
+                if (isHorizontal === true && Math.abs(dx) > 50) {
+                    e.preventDefault();
+                    if (dx < 0) goTo((currentIndex + 1) % total);
+                    else goTo((currentIndex - 1 + total) % total);
+                }
+            }, { passive: false });
+        }
+    }
 
     if (menuToggle && nav) {
         menuToggle.addEventListener('click', function() {

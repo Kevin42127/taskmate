@@ -26,11 +26,9 @@ F:\software\bin\Debug\net8.0\Avalonia.X11.dll
 F:\software\bin\Debug\net8.0\DynamicData.dll
 F:\software\bin\Debug\net8.0\HarfBuzzSharp.dll
 F:\software\bin\Debug\net8.0\MicroCom.Runtime.dll
-F:\software\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
 F:\software\bin\Debug\net8.0\ReactiveUI.dll
 F:\software\bin\Debug\net8.0\SkiaSharp.dll
 F:\software\bin\Debug\net8.0\Splat.dll
-F:\software\bin\Debug\net8.0\System.Drawing.Common.dll
 F:\software\bin\Debug\net8.0\System.IO.Pipelines.dll
 F:\software\bin\Debug\net8.0\System.Reactive.dll
 F:\software\bin\Debug\net8.0\Tmds.DBus.Protocol.dll
@@ -46,7 +44,6 @@ F:\software\bin\Debug\net8.0\runtimes\osx\native\libHarfBuzzSharp.dylib
 F:\software\bin\Debug\net8.0\runtimes\win-arm64\native\libHarfBuzzSharp.dll
 F:\software\bin\Debug\net8.0\runtimes\win-x64\native\libHarfBuzzSharp.dll
 F:\software\bin\Debug\net8.0\runtimes\win-x86\native\libHarfBuzzSharp.dll
-F:\software\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
 F:\software\bin\Debug\net8.0\runtimes\linux-arm\native\libSkiaSharp.so
 F:\software\bin\Debug\net8.0\runtimes\linux-arm64\native\libSkiaSharp.so
 F:\software\bin\Debug\net8.0\runtimes\linux-musl-x64\native\libSkiaSharp.so
@@ -55,8 +52,6 @@ F:\software\bin\Debug\net8.0\runtimes\osx\native\libSkiaSharp.dylib
 F:\software\bin\Debug\net8.0\runtimes\win-arm64\native\libSkiaSharp.dll
 F:\software\bin\Debug\net8.0\runtimes\win-x64\native\libSkiaSharp.dll
 F:\software\bin\Debug\net8.0\runtimes\win-x86\native\libSkiaSharp.dll
-F:\software\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
-F:\software\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 F:\software\obj\Debug\net8.0\TaskMateApp.csproj.AssemblyReference.cache
 F:\software\obj\Debug\net8.0\Avalonia\Resources.Inputs.cache
 F:\software\obj\Debug\net8.0\Avalonia\resources
@@ -65,6 +60,14 @@ F:\software\obj\Debug\net8.0\TaskMateApp.AssemblyInfoInputs.cache
 F:\software\obj\Debug\net8.0\TaskMateApp.AssemblyInfo.cs
 F:\software\obj\Debug\net8.0\TaskMateApp.csproj.CoreCompileInputs.cache
 F:\software\obj\Debug\net8.0\TaskMateApp.sourcelink.json
+F:\software\obj\Debug\net8.0\TaskMate.E7103EF4.Up2Date
+F:\software\obj\Debug\net8.0\TaskMateApp.genruntimeconfig.cache
+F:\software\obj\Debug\net8.0\ref\TaskMateApp.dll
+F:\software\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
+F:\software\bin\Debug\net8.0\System.Drawing.Common.dll
+F:\software\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+F:\software\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+F:\software\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 F:\software\obj\Debug\net8.0\Avalonia\references
 F:\software\obj\Debug\net8.0\Avalonia\original.dll
 F:\software\obj\Debug\net8.0\Avalonia\original.pdb
@@ -72,6 +75,3 @@ F:\software\obj\Debug\net8.0\Avalonia\original.ref.dll
 F:\software\obj\Debug\net8.0\refint\TaskMateApp.dll
 F:\software\obj\Debug\net8.0\TaskMateApp.dll
 F:\software\obj\Debug\net8.0\TaskMateApp.pdb
-F:\software\obj\Debug\net8.0\TaskMate.E7103EF4.Up2Date
-F:\software\obj\Debug\net8.0\TaskMateApp.genruntimeconfig.cache
-F:\software\obj\Debug\net8.0\ref\TaskMateApp.dll

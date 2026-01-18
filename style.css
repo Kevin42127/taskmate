@@ -159,8 +159,101 @@ body {
 .hero-description {
     font-size: 20px;
     color: #757575;
-    margin-bottom: 48px;
+    margin-bottom: 32px;
     font-weight: 400;
+}
+
+.hero-preview {
+    margin: 0 auto 48px;
+    max-width: 1000px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.hero-preview .carousel-inner {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    border: 1px solid #E0E0E0;
+}
+
+.hero-preview .carousel-track {
+    display: flex;
+    transition: transform 0.4s ease;
+}
+
+.hero-preview .carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+}
+
+.preview-img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    display: block;
+}
+
+.hero-preview .carousel-btn {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    color: #212121;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    transition: background 0.2s, box-shadow 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hero-preview .carousel-btn:hover {
+    background: #F5F5F5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.hero-preview .carousel-btn .material-icons {
+    font-size: 28px;
+}
+
+.hero-preview .carousel-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.hero-preview .carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hero-preview .carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.hero-preview .carousel-dot.active {
+    background: #fff;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.5);
 }
 
 .download-section {
@@ -607,6 +700,15 @@ body {
         margin-bottom: 32px;
     }
 
+    .hero-preview {
+        margin-bottom: 32px;
+    }
+
+    .hero-preview .carousel-prev,
+    .hero-preview .carousel-next {
+        display: none;
+    }
+
     .download-section {
         margin-top: 32px;
     }
@@ -744,6 +846,14 @@ body {
     .hero-description {
         font-size: 15px;
         margin-bottom: 24px;
+    }
+
+    .hero-preview {
+        margin-bottom: 24px;
+    }
+
+    .hero-preview .carousel-inner {
+        border-radius: 8px;
     }
 
     .download-btn {

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TaskMateApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+07f9c9a66cfe44b14e10e0de3f85fd780946acc8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+124c3ee800eebfa949d07a8742f3bd547372f463")]
 [assembly: System.Reflection.AssemblyProductAttribute("TaskMateApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TaskMateApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
