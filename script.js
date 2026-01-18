@@ -92,13 +92,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (downloadBtn) {
         downloadBtn.addEventListener('click', function(e) {
-            const fileExists = this.getAttribute('href');
-            if (!fileExists || fileExists === '#') {
-                e.preventDefault();
+            const url = this.getAttribute('data-download-url');
+            if (!url || url === '#') {
                 alert('安裝檔尚未準備完成，請稍後再試。');
+                return;
             }
-            
             createRipple(e, this);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = this.getAttribute('data-download-name') || 'TaskMateSetup.exe';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
         });
     }
 
