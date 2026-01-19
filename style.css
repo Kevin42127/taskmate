@@ -395,6 +395,10 @@ body {
     grid-column: 3 / 4;
 }
 
+.features-grid .feature-card:nth-child(8) {
+    grid-column: 4 / 5;
+}
+
 .feature-card {
     background: #FFFFFF;
     padding: 40px 32px;
@@ -611,7 +615,8 @@ body {
 
     .features-grid .feature-card:nth-child(5),
     .features-grid .feature-card:nth-child(6),
-    .features-grid .feature-card:nth-child(7) {
+    .features-grid .feature-card:nth-child(7),
+    .features-grid .feature-card:nth-child(8) {
         grid-column: auto;
     }
 
@@ -735,7 +740,8 @@ body {
 
     .features-grid .feature-card:nth-child(5),
     .features-grid .feature-card:nth-child(6),
-    .features-grid .feature-card:nth-child(7) {
+    .features-grid .feature-card:nth-child(7),
+    .features-grid .feature-card:nth-child(8) {
         grid-column: 1 / -1;
     }
 
